@@ -4,15 +4,21 @@ var HtmlWebpackPlugin = require("html-webpack-plugin");
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var CleanWebpackPlugin = require("clean-webpack-plugin");
 
+const VENDOR_LIBS = [
+    "jquery", "lodash", "babel-polyfill",
+    "react", "react-dom", "react-redux", "react-router",
+    "redux", "redux-form", "redux-thunk"
+];
+
 module.exports = {
-    entry: {        
-        vendor: ["jquery, lodash"],
-        app: ["babel-polyfill", "./src/app.js", "./src/scss/main.scss"], 
+    entry: {                
+        bundle: ["./src/app.js", "./src/scss/main.scss"], 
+        vendor: VENDOR_LIBS
     },
     devtool: process.env.NODE_ENV === "production" ? "source-map" : "eval-cheap-module-source-map",
-    output: {        
-        filename: "app.bundle.js",
-        path: path.resolve(__dirname, "build")
+    output: {                
+        path: path.resolve(__dirname, "build"),
+        filename: "[name].[hash].js",
     },
     module: {
         loaders: [
@@ -51,14 +57,19 @@ module.exports = {
         ]
     },
     plugins: [
-        new ExtractTextPlugin({
-            filename: "[name].bundle.css",
-            allChunks: true
-        }),
+        new CleanWebpackPlugin(["build/*.js", "build/*.css"]),
+        new webpack.optimize.CommonsChunkPlugin({
+            names: ["vendor", "manifest"]
+        }),        
         new HtmlWebpackPlugin({
             template: "index.html"
-        }),   
-        //new webpack.optimize.CommonsChunkPlugin("vendor.js"),
-        new CleanWebpackPlugin(["build/*.js", "build/*.css"])
+        }),        
+        new ExtractTextPlugin({
+            filename: "[name].[hash].css",
+            allChunks: true
+        }),
+        new webpack.DefinePlugin({
+            "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV)
+        })        
     ]    
 };

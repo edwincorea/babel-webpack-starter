@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "start": "webpack-dev-server --hot --output-public-path=/build/ --inline --progress --port 8181",
+    "start": "webpack-dev-server --hot --output-public-path=/build/ --progress --inline --port 8181",
     "lint": "./node_modules/.bin/eslint ./src/**/*.js"
   },
   "author": "",
